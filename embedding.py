@@ -16,14 +16,18 @@ def create_embeddings(text):
 	# Prepare the payload
 	payload = {
 		"model": "nomic-embed-text", # https://ollama.com/library/nomic-embed-text
-		"prompt": "\n".join(text)  # Combine paragraphs into a single prompt if needed
+		#"prompt": "\n".join(text)  # Combine paragraphs into a single prompt if needed
+		"prompt": text
 	}
 
 	# Make the HTTP POST request
 	response = requests.post(url, json=payload)
 
-	print(text)
-	print(response.json().get("embedding"))
+	print(f"Payload sent to API: {payload}")
+	print(f"Response Status Code: {response.status_code}")
+	print(f"Response JSON: {response.json()}")
+
+	#print(response.json().get("embedding"))
 
 	# Check for successful response
 	if response.status_code == 200:
