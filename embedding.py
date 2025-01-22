@@ -1,4 +1,9 @@
+import os
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+EMBEDDING_API_URL = os.getenv("EMBEDDING_API_URL")
 
 def create_embeddings(text):
 	"""
@@ -10,9 +15,6 @@ def create_embeddings(text):
     Returns:
         list: A list of embedding vectors.
     """
-	# Define the API URL
-	url = "https://deciding-horribly-robin.ngrok-free.app/api/embeddings"
-
 	# Prepare the payload
 	payload = {
 		"model": "nomic-embed-text", # https://ollama.com/library/nomic-embed-text
@@ -21,12 +23,11 @@ def create_embeddings(text):
 	}
 
 	# Make the HTTP POST request
-	response = requests.post(url, json=payload)
+	response = requests.post(EMBEDDING_API_URL, json=payload)
 
 	print(f"Payload sent to API: {payload}")
-	print(f"Response Status Code: {response.status_code}")
-	print(f"Response JSON: {response.json()}")
-
+	#print(f"Response Status Code: {response.status_code}")
+	#print(f"Response JSON: {response.json()}")
 	#print(response.json().get("embedding"))
 
 	# Check for successful response

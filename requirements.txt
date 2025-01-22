@@ -3,3 +3,4 @@ colorama~=0.4.6
 python-dotenv~=1.0.1
 powerschool~=4.0.1
 chromadb~=0.6.3
+faker~=33.3.1

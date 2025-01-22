@@ -1,14 +1,17 @@
 import os
+import random
 import chromadb
 from chromadb import Collection
 import powerschool
 import requests
 import embedding
 from dotenv import load_dotenv
+from faker import Faker
 import colorama
 from colorama import Fore, Back
 
 load_dotenv()
+fake = Faker()
 colorama.init(autoreset=True)
 
 CHROMA_DB_HOST = os.getenv("CHROMA_DB_HOST")
@@ -32,7 +35,7 @@ def vectorize_students(collection: Collection) -> None:
 
 	students_table = ps.get_schema_table('students')
 	params = {
-		'q': 'enroll_status=ge=0',
+		'q': 'enroll_status==0',
 		'pagesize': 10,
 		'page': 1,
 		'projection': 'dcid,schoolid,student_number,lastfirst,last_name,first_name,grade_level,gender,districtentrydate,entrydate,exitdate,father,mother,enroll_status',
@@ -40,15 +43,87 @@ def vectorize_students(collection: Collection) -> None:
 	array_students = students_table.query(**params)
 
 	for student in array_students:
+		# Generate a fake 4-digit student number
+		student_number = fake.random_int(min=1000, max=9999)
 
-		student_profile = f"{student['last_name']}, {student['first_name']}  is a grade {student['grade_level']} student. The student number is {student['student_number']}. The gender is {student['gender']}"
+		# Enrollment status
+		enroll_status = "enrolled"
 
-		# Add the student document to the collection
+		# Generate tuition and capital fees for the year 2025
+		tuition_fee_2025 = fake.random_int(min=100000, max=300000)
+		capital_fee_2025 = fake.random_int(min=10000, max=30000)
+
+		# Generate tuition and capital fees for the year 2024
+		tuition_fee_2024 = fake.random_int(min=100000, max=300000)
+		capital_fee_2024 = fake.random_int(min=10000, max=30000)
+
+		# Generate student name and gender
+		student_name = (
+			fake.name_female() if student["gender"] == "F" else fake.name_male().replace(" ", ", ")
+		)
+		gender = "Female" if student["gender"] == "F" else "Male"
+
+		# Generate parent names
+		father_name = fake.name_male()
+		mother_name = fake.name_female()
+
+		# Create the student profile
+		student_profile = {
+			"name": student_name,
+			"grade": student["grade_level"],
+			"student_number": student_number,
+			"gender": gender,
+			"enroll_status": enroll_status,
+			"district_entry_date": student["districtentrydate"],
+			"entry_date": student["entrydate"],
+			"exit_date": student["exitdate"],
+			"parents": {"father": father_name, "mother": mother_name},
+		}
+
+		# Create the billing profile
+		billing_profile = {
+			"2025": {"tuition": tuition_fee_2025, "capital_fee": capital_fee_2025},
+			"2024": {"tuition": tuition_fee_2024, "capital_fee": capital_fee_2024},
+		}
+
+		# Generate checked-out school properties
+		school_devices = ["Macbook", "iPad", "Lego Kit", "Calculator", "Headphones", "Camera"]
+		school_books = ["Math Book", "Science Book", "History Book", "English Book", "Chinese Book", "Art Book"]
+		selected_devices = random.sample(school_devices, 2)
+		selected_books = random.sample(school_books, 2)
+
+		checkout_properties = [
+								  {"type": device,
+								   "checkout_date": fake.date_between(start_date="-1y", end_date="today")}
+								  for device in selected_devices
+							  ] + [
+								  {"type": book, "checkout_date": fake.date_between(start_date="-1y", end_date="today")}
+								  for book in selected_books
+							  ]
+
+		# Create the vaccination profile
+		vaccination_profile = {
+			"HepB": {
+				"1st": fake.date_between(start_date="-20y", end_date="-15y"),
+				"2nd": fake.date_between(start_date="-15y", end_date="-10y"),
+				"3rd": fake.date_between(start_date="-10y", end_date="-5y"),
+			},
+			"DTaP/Tdap": {
+				"DTaP_series_completed": "pre-age 7",
+				"Tdap_booster": fake.date_between(start_date="-5y", end_date="today"),
+			},
+		}
+
+		# Combine the profiles into a single document
+		combined_profile = f"{student_profile} {billing_profile} {checkout_properties} {vaccination_profile}"
+
+		# Add the combined document to the collection
 		collection.add(
-			documents=[student_profile],
-			metadatas=[{"source": "student profile"}],
-			embeddings=[embedding.create_embeddings(student_profile)],
-			ids = [student['dcid']]
+			documents=[combined_profile],
+			metadatas=[{"source": "student and billing profile"}],
+			embeddings=[embedding.create_embeddings(combined_profile)],
+			uris=[f"student_{student_number}"],
+			ids=[student['dcid']]
 		)
 
 
