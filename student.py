@@ -2,7 +2,7 @@ import os
 import random
 import chromadb
 from chromadb import Collection
-import powerschool
+from powerschool_adapter.powerschool import PowerSchool
 import requests
 import embedding
 from dotenv import load_dotenv
@@ -14,35 +14,36 @@ load_dotenv()
 fake = Faker()
 colorama.init(autoreset=True)
 
+POWERSCHOOL_SERVER_ADDRESS = os.getenv("POWERSCHOOL_SERVER_ADDRESS")
+POWERSCHOOL_CLIENT_ID = os.getenv("POWERSCHOOL_CLIENT_ID")
+POWERSCHOOL_CLIENT_SECRET = os.getenv("POWERSCHOOL_CLIENT_SECRET")
+
 CHROMA_DB_HOST = os.getenv("CHROMA_DB_HOST")
-CHROMA_DB_PORT = os.getenv("CHROMA_DB_PORT")
+CHROMA_DB_PORT = int(os.getenv("CHROMA_DB_PORT"))
 EMBEDDING_API_URL = os.getenv("EMBEDDING_API_URL")
 
 chroma_client = chromadb.HttpClient(host=CHROMA_DB_HOST, port=CHROMA_DB_PORT)
 
 def vectorize_students(collection: Collection) -> None:
 
-	if (os.getenv('PS_CLIENT_ID') is None or
-			os.getenv('PS_CLIENT_SECRET') is None or
-			os.getenv('PS_HOST') is None):
-		print("Environment variables were not set.")
+	if (os.getenv('POWERSCHOOL_SERVER_ADDRESS') is None or
+			os.getenv('POWERSCHOOL_CLIENT_ID') is None or
+			os.getenv('POWERSCHOOL_CLIENT_SECRET') is None):
+		print("PowerSchool environment variables were not set.")
 		exit()
 
-	client_id = os.getenv("PS_CLIENT_ID")
-	client_secret = os.getenv("PS_CLIENT_SECRET")
-	credentials = (client_id, client_secret)
-	ps = powerschool.PowerSchool(os.getenv('PS_HOST'), auth=credentials)
+	powerschool = PowerSchool(
+		server_address=POWERSCHOOL_SERVER_ADDRESS,
+		client_id=POWERSCHOOL_CLIENT_ID,
+		client_secret=POWERSCHOOL_CLIENT_SECRET
+	)
 
-	students_table = ps.get_schema_table('students')
-	params = {
-		'q': 'enroll_status==0',
-		'pagesize': 10,
-		'page': 1,
-		'projection': 'dcid,schoolid,student_number,lastfirst,last_name,first_name,grade_level,gender,districtentrydate,entrydate,exitdate,father,mother,enroll_status',
-	}
-	array_students = students_table.query(**params)
+	response = powerschool.table('students').projection(["ID", "STUDENT_NUMBER", "LAST_NAME", "FIRST_NAME"]).set_method(
+		"GET").send().squash_table_response()
 
-	for student in array_students:
+	students = response.to_list()
+
+	for student in students:
 		# Generate a fake 4-digit student number
 		student_number = fake.random_int(min=1000, max=9999)
 
