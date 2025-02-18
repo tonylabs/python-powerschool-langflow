@@ -3,14 +3,8 @@
 ## Perquisites
 
 - Python 3.8 or higher
-- PowerSchool API Python client library
-- astrapy Python client library
-
-## Create SSH Tunnel
-
-```bash
-ssh -N -L 8000:10.211.152.74:8000 tony@3.tcp.ngrok.io -p 24137
-```
+- PowerSchool Adapter Library
+- Chroma Database Python client library
 
 ## Langflow
 
