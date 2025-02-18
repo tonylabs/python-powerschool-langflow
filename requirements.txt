@@ -1,5 +1,5 @@
-astrapy
 colorama
 python-dotenv
 chromadb
 faker
+powerschool_adapter
