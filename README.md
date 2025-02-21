@@ -55,8 +55,8 @@ You can download this repository or fork it to your own repository. Create a `.e
 
 ```dotenv
 POWERSCHOOL_SERVER_ADDRESS=https://your_powerschool_domain
-POWERSCHOOL_CLIENT_ID=029408f0-e8d1-
-POWERSCHOOL_CLIENT_SECRET=f81d4123-3156-
+POWERSCHOOL_CLIENT_ID=029408f0-e8d1-xxxx-xxxxx
+POWERSCHOOL_CLIENT_SECRET=f81d4123-3156-xxxx-xxxxx
 EMBEDDING_API_URL=http://your_ollama_host/api/embeddings
 CHROMA_DB_HOST=xxx.xxx.xxx.xxx
 CHROMA_DB_PORT=8000
