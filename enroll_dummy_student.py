@@ -33,7 +33,7 @@ powerschool = PowerSchool(
 	client_secret=POWERSCHOOL_CLIENT_SECRET
 )
 
-for _ in range(30):
+for _ in range(10):
 	payload = {
 		"students" : {
 			"student" : {

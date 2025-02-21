@@ -27,6 +27,6 @@ powerschool = PowerSchool(
 	client_secret=POWERSCHOOL_CLIENT_SECRET
 )
 
-response = powerschool.table('students').projection(["DCID", "STUDENT_NUMBER", "LASTFIRST"]).set_method("GET").send()
+response = powerschool.table('students').projection(["DCID", "STUDENT_NUMBER", "FIRST_NAME", "LAST_NAME"]).set_method("GET").send()
 students = json.loads(response.to_json())
 print(Fore.GREEN + json.dumps(students, indent=4))
