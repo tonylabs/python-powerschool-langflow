@@ -111,9 +111,9 @@ After the embeddings are generated, you can start build your vector store RAG in
 
 Click on the `Playground` button to start the pipeline. You can interact with the pipeline using the `Chat Input` component.
 
-![Video](https://assets.tonylabs.com/videos/powerschool/powerschool-langflow-rag.mp4)
+### Demo
 
-[![Demo Video](https://assets.tonylabs.com/images/thumbnail/powerschool-langflow-rag-thumbnail.jpg)](https://assets.tonylabs.com/videos/powerschool/powerschool-langflow-rag.mp4)
+https://assets.tonylabs.com/videos/powerschool/powerschool-langflow-rag.mp4
 
 ---
 
