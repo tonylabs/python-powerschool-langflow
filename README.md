@@ -1,4 +1,6 @@
 # PowerSchool Langflow
+
+PowerSchool Langflow example is a project designed to integrate PowerSchool data with Langflow for generating text embeddings and building a vector store RAG (Retrieval-Augmented Generation) pipeline. The project leverages various tools and frameworks such as Conda, PowerSchool Adapter, Ollama, Langflow, and Chroma to facilitate the processing and storage of student data embeddings.
  
 ## Perquisites
 
